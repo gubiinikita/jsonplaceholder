@@ -1,20 +1,31 @@
 ///<reference types = "cypress"/>
 import postsContent from "../support/posts_content.json"
+import {faker} from '@faker-js/faker';
+import post from '../fixtures/post.json';
+import user from '../fixtures/user.json';
+
+user.email = faker.internet.email();
+user.password = faker.internet.password(15);
+post.title = faker.hacker.abbreviation();
+post.body = faker.hacker.phrase();
 
 let token
 let postId
 
-describe('empty spec', () => {
-  it.skip(`Registration`, () => {
-    cy.request('POST', 'http://localhost:3000/register', { "email": "olivier123@mail.com", "password": "bestPassw0rd" }).then(response => {
-      expect(response.status).to.be.eq(201);
-    })
-  })
-
-  it(`Authorization`, () => {
-    cy.request('POST', 'http://localhost:3000/login', { "email": "olivier123@mail.com", "password": "bestPassw0rd" }).then(response => {
+describe('Request exam task', () => {
+  it(`Registration`, () => {
+    cy.request({
+      method: 'POST',
+      url: 'http://localhost:3000/register',
+      body:
+      {
+        "email": user.email, 
+        "password": user.password
+      },
+    }).then(response => {
       token = 'Bearer ' + response.body.accessToken
-      expect(response.status).to.be.eq(200);
+      expect(response.status).to.be.eq(201);
+      console.log(token)
     })
   })
 
@@ -46,8 +57,8 @@ describe('empty spec', () => {
       url: 'http://localhost:3000/664/posts',
       body:
       {
-        title: "111",
-        body: "1111"
+        title: post.title,
+        body: post.body
       },
       failOnStatusCode: false
     }).then(response => {
@@ -65,13 +76,27 @@ describe('empty spec', () => {
       url: 'http://localhost:3000/664/posts',
       body:
       {
-        title: "111",
-        body: "1111"
+        title: post.title,
+        body: post.body
       }
     }).then(response => {
       expect(response.status).to.be.eq(201);
-      expect(response.body.title).to.be.eq('111');
-      expect(response.body.body).to.be.eq('1111');
+      expect(response.body.title).to.be.eq(post.title);
+      expect(response.body.body).to.be.eq(post.body);
+      postId = response.body.id;
+    }).then(() => {
+      cy.request({
+        headers:
+        {
+          'Content-Type': 'application/json'
+        },
+        method: 'GET',
+        url: `http://localhost:3000/posts/${postId}`
+      }).then(response => {
+        expect(response.status).to.be.eq(200);
+        expect(response.body.title).to.be.eq(expetedTitle);
+        expect(response.body.body).to.be.eq(expectedBody);
+      })
     })
   })
 
@@ -92,6 +117,19 @@ describe('empty spec', () => {
       expect(response.status).to.be.eq(201);
       expect(response.body.title).to.be.eq('111');
       expect(response.body.body).to.be.eq('1111');
+    }).then(() => {
+      cy.request({
+        headers:
+        {
+          'Content-Type': 'application/json'
+        },
+        method: 'GET',
+        url: `http://localhost:3000/posts/${postId}`
+      }).then(response => {
+        expect(response.status).to.be.eq(200);
+        expect(response.body.title).to.be.eq('111');
+        expect(response.body.body).to.be.eq('1111');
+      })
     })
   })
 
@@ -173,7 +211,7 @@ describe('empty spec', () => {
       {
         'Content-Type': 'application/json'
       },
-      method: 'PATCH',
+      method: 'DELETE',
       url: 'http://localhost:3000/posts/128323',
       body:
       {
