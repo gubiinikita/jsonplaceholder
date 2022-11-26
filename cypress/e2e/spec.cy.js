@@ -67,6 +67,8 @@ describe('Request exam task', () => {
   })
 
   it(`Create new post with auth`, () => {
+    const postTitle = post.title
+    const postBody = post.body
     cy.request({
       headers:
       {
@@ -94,13 +96,15 @@ describe('Request exam task', () => {
         url: `http://localhost:3000/posts/${postId}`
       }).then(response => {
         expect(response.status).to.be.eq(200);
-        expect(response.body.title).to.be.eq(expetedTitle);
-        expect(response.body.body).to.be.eq(expectedBody);
+        expect(response.body.title).to.be.eq(postTitle);
+        expect(response.body.body).to.be.eq(postBody);
       })
     })
   })
 
   it(`Create new post without auth`, () => {
+    const postTitle = post.title
+    const postBody = post.body
     cy.request({
       headers:
       {
@@ -110,13 +114,13 @@ describe('Request exam task', () => {
       url: 'http://localhost:3000/posts',
       body:
       {
-        title: "111",
-        body: "1111"
+        title: post.title,
+        body: post.body
       }
     }).then(response => {
       expect(response.status).to.be.eq(201);
-      expect(response.body.title).to.be.eq('111');
-      expect(response.body.body).to.be.eq('1111');
+      expect(response.body.title).to.be.eq(post.title);
+      expect(response.body.body).to.be.eq(post.body);
     }).then(() => {
       cy.request({
         headers:
@@ -127,8 +131,8 @@ describe('Request exam task', () => {
         url: `http://localhost:3000/posts/${postId}`
       }).then(response => {
         expect(response.status).to.be.eq(200);
-        expect(response.body.title).to.be.eq('111');
-        expect(response.body.body).to.be.eq('1111');
+        expect(response.body.title).to.be.eq(postTitle);
+        expect(response.body.body).to.be.eq(postBody);
       })
     })
   })
@@ -143,8 +147,8 @@ describe('Request exam task', () => {
       url: 'http://localhost:3000/posts/128323',
       body:
       {
-        title: "111",
-        body: "1111"
+        title: post.title,
+        body: post.body
       },
       failOnStatusCode: false
     }).then(response => {
@@ -153,6 +157,8 @@ describe('Request exam task', () => {
   })
 
   it(`Create new post and update it`, () => {
+    const postTitle = post.title
+    const postBody = post.body
     cy.request({
       headers:
       {
@@ -162,13 +168,13 @@ describe('Request exam task', () => {
       url: 'http://localhost:3000/posts',
       body:
       {
-        title: "111",
-        body: "1111"
+        title: post.title,
+        body: post.body
       }
     }).then(response => {
       expect(response.status).to.be.eq(201);
-      expect(response.body.title).to.be.eq('111');
-      expect(response.body.body).to.be.eq('1111');
+      expect(response.body.title).to.be.eq(postTitle);
+      expect(response.body.body).to.be.eq(postBody);
       postId = response.body.id
     }).then(() => {
       cy.request({
@@ -180,14 +186,14 @@ describe('Request exam task', () => {
         url: `http://localhost:3000/posts/${postId}`,
         body:
         {
-          title: "updated post",
-          body: "updated post"
+          title: "updated post title",
+          body: "updated post body"
         },
         failOnStatusCode: false
       }).then(response => {
         expect(response.status).to.be.eq(200);
-        expect(response.body.title).to.be.eq('updated post');
-        expect(response.body.body).to.be.eq('updated post');
+        expect(response.body.title).to.be.eq('updated post title');
+        expect(response.body.body).to.be.eq('updated post body');
       }).then(() => {
         cy.request({
           headers:
@@ -198,8 +204,8 @@ describe('Request exam task', () => {
           url: `http://localhost:3000/posts/${postId}`
         }).then(response => {
           expect(response.status).to.be.eq(200);
-          expect(response.body.title).to.be.eq('updated post');
-          expect(response.body.body).to.be.eq('updated post');
+          expect(response.body.title).to.be.eq('updated post title');
+          expect(response.body.body).to.be.eq('updated post body');
         })
       })
     })
@@ -215,8 +221,8 @@ describe('Request exam task', () => {
       url: 'http://localhost:3000/posts/128323',
       body:
       {
-        title: "111",
-        body: "1111"
+        title: post.title,
+        body: post.body
       },
       failOnStatusCode: false
     }).then(response => {
@@ -225,6 +231,8 @@ describe('Request exam task', () => {
   })
 
   it(`Create new post and update it and then delete it`, () => {
+    const postTitle = post.title
+    const postBody = post.body
     cy.request({
       headers:
       {
@@ -234,13 +242,13 @@ describe('Request exam task', () => {
       url: 'http://localhost:3000/posts',
       body:
       {
-        title: "111",
-        body: "1111"
+        title: post.title,
+        body: post.body
       }
     }).then(response => {
       expect(response.status).to.be.eq(201);
-      expect(response.body.title).to.be.eq('111');
-      expect(response.body.body).to.be.eq('1111');
+      expect(response.body.title).to.be.eq(postTitle);
+      expect(response.body.body).to.be.eq(postBody);
       postId = response.body.id
     }).then(() => {
       cy.request({
@@ -252,14 +260,13 @@ describe('Request exam task', () => {
         url: `http://localhost:3000/posts/${postId}`,
         body:
         {
-          title: "updated post",
-          body: "updated post"
+          title: "updated post title",
+          body: "updated post body"
         },
-        failOnStatusCode: false
       }).then(response => {
         expect(response.status).to.be.eq(200);
-        expect(response.body.title).to.be.eq('updated post');
-        expect(response.body.body).to.be.eq('updated post');
+        expect(response.body.title).to.be.eq('updated post title');
+        expect(response.body.body).to.be.eq('updated post body');
       }).then(() => {
         cy.request({
           headers:
